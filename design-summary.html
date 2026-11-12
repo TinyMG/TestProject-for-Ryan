@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workflow Design Summary: Financial Template Web App Builder (Music School)</title>
+<style>
+  :root {
+    --bg: #f7f8fa; --card: #ffffff; --ink: #1a2233; --muted: #5b6678;
+    --line: #e3e7ee; --accent: #2563eb; --accent-soft: #eaf1fe;
+    --skill1: #7c3aed; --skill1-soft: #f3eeff;
+    --skill2: #0d9488; --skill2-soft: #e6f7f5;
+    --check: #d97706; --check-soft: #fef3e2;
+    --high: #16a34a; --med: #d97706; --low: #dc2626; --artifact: #2563eb;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+         background: var(--bg); color: var(--ink); line-height: 1.55; padding: 40px 24px 80px; }
+  .wrap { max-width: 1060px; margin: 0 auto; }
+  h1 { font-size: 1.9rem; letter-spacing: -0.02em; }
+  .subtitle { color: var(--muted); margin-bottom: 28px; font-size: 1.02rem; }
+  h2 { font-size: 1.15rem; margin: 40px 0 14px; padding-bottom: 8px;
+       border-bottom: 2px solid var(--line); letter-spacing: -0.01em; }
+  h2 .num { display: inline-flex; align-items: center; justify-content: center;
+            width: 26px; height: 26px; border-radius: 8px; background: var(--accent-soft);
+            color: var(--accent); font-size: 0.85rem; margin-right: 10px; vertical-align: -4px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+          padding: 20px 22px; box-shadow: 0 1px 3px rgba(20,30,55,0.05); }
+  .task-strip { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  .task-strip .label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em;
+                       color: var(--muted); margin-bottom: 4px; }
+  .task-strip .value { font-weight: 600; font-size: 0.98rem; }
+  .pipeline { display: grid; grid-template-columns: 1fr 56px 1fr; align-items: stretch; }
+  .skill-col { border-radius: 14px; padding: 18px; border: 2px solid; }
+  .skill-col.s1 { border-color: var(--skill1); background: var(--skill1-soft); }
+  .skill-col.s2 { border-color: var(--skill2); background: var(--skill2-soft); }
+  .skill-title { font-weight: 700; font-size: 1.02rem; margin-bottom: 2px; }
+  .skill-col.s1 .skill-title { color: var(--skill1); }
+  .skill-col.s2 .skill-title { color: var(--skill2); }
+  .skill-sub { font-size: 0.8rem; color: var(--muted); margin-bottom: 14px; }
+  .phase { background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+           padding: 10px 12px; margin-bottom: 10px; }
+  .phase .p-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .phase .p-name { font-weight: 600; font-size: 0.92rem; }
+  .phase .p-desc { font-size: 0.82rem; color: var(--muted); margin-top: 2px; }
+  .phase .p-out { font-size: 0.78rem; margin-top: 6px; color: var(--artifact); font-weight: 600; }
+  .phase .p-out::before { content: "out: "; text-transform: uppercase; font-size: 0.68rem; }
+  .badge { display: inline-block; font-size: 0.68rem; font-weight: 700; padding: 2px 8px;
+           border-radius: 999px; white-space: nowrap; }
+  .b-high { background: #e7f6ec; color: var(--high); }
+  .b-med  { background: var(--check-soft); color: var(--med); }
+  .b-low  { background: #fdeaea; color: var(--low); }
+  .b-mix  { background: linear-gradient(90deg, #e7f6ec 50%, #fdeaea 50%); color: var(--ink); }
+  .checkpoint { background: var(--check-soft); border: 1.5px dashed var(--check); border-radius: 10px;
+                padding: 9px 12px; margin-bottom: 10px; font-size: 0.85rem; }
+  .cp-tag { font-weight: 700; color: var(--check); font-size: 0.72rem;
+            text-transform: uppercase; letter-spacing: 0.06em; }
+  .conditional { margin-top: 4px; background: #fff; border: 1.5px dashed var(--check);
+                 border-radius: 10px; padding: 9px 12px; font-size: 0.82rem; }
+  .handoff { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
+  .handoff .arrow { font-size: 1.6rem; color: var(--artifact); }
+  .handoff .h-label { writing-mode: vertical-rl; transform: rotate(180deg); font-size: 0.7rem;
+                      font-weight: 700; color: var(--artifact); text-transform: uppercase;
+                      letter-spacing: 0.08em; text-align: center; }
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 14px; font-size: 0.8rem; color: var(--muted); }
+  .legend span.swatch { display: inline-block; width: 11px; height: 11px; border-radius: 3px;
+                        margin-right: 5px; vertical-align: -1px; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  th { text-align: left; font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.06em;
+       color: var(--muted); padding: 8px 12px; border-bottom: 2px solid var(--line); }
+  td { padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  .dest { font-weight: 700; white-space: nowrap; }
+  .dest.claude { color: #b45309; } .dest.skillmd { color: var(--accent); }
+  .dest.refs { color: var(--skill1); } .dest.assets { color: var(--skill2); }
+  .dest.scripts { color: #be185d; }
+  code { background: #eef1f6; padding: 1px 6px; border-radius: 5px; font-size: 0.84em; }
+  .ladder { display: flex; flex-direction: column-reverse; max-width: 640px; }
+  .rung { display: flex; align-items: center; gap: 14px; padding: 12px 16px;
+          border: 1px solid var(--line); background: var(--card); }
+  .rung:first-child { border-radius: 0 0 12px 12px; }
+  .rung:last-child { border-radius: 12px 12px 0 0; }
+  .rung + .rung { border-bottom: none; }
+  .rung .strength { font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+                    letter-spacing: 0.06em; width: 86px; flex-shrink: 0; }
+  .rung.r1 .strength { color: var(--muted); } .rung.r2 .strength { color: var(--med); }
+  .rung.r3 .strength { color: var(--high); }
+  .rung .r-body b { font-size: 0.92rem; }
+  .rung .r-body div { font-size: 0.82rem; color: var(--muted); }
+  .struggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .struggle .s-from { font-weight: 700; color: var(--low); font-size: 0.9rem; }
+  .struggle .s-from::before { content: "STRUGGLE: "; font-size: 0.7rem; letter-spacing: 0.05em; }
+  .struggle .s-arrow { color: var(--muted); margin: 4px 0; font-size: 0.85rem; }
+  .struggle .s-to { font-weight: 600; font-size: 0.9rem; }
+  .struggle .s-detail { font-size: 0.82rem; color: var(--muted); margin-top: 4px; }
+  .loop-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  .loop-card .l-what { font-weight: 600; font-size: 0.9rem; }
+  .loop-card .l-arrow { color: var(--accent); margin: 6px 0; font-size: 0.95rem; }
+  .loop-card .l-where { font-size: 0.85rem; }
+  .loop-card .l-note { font-size: 0.79rem; color: var(--muted); margin-top: 6px; }
+  .files-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .file-list { list-style: none; }
+  .file-list li { padding: 7px 0; border-bottom: 1px solid var(--line); font-size: 0.88rem; display: flex; gap: 10px; }
+  .file-list li:last-child { border-bottom: none; }
+  .file-list .why { color: var(--muted); font-size: 0.82rem; }
+  .ftag { flex-shrink: 0; font-size: 0.68rem; font-weight: 700; padding: 2px 7px;
+          border-radius: 5px; height: fit-content; margin-top: 2px; }
+  .ftag.skill { background: var(--accent-soft); color: var(--accent); }
+  .ftag.ref { background: var(--skill1-soft); color: var(--skill1); }
+  .ftag.asset { background: var(--skill2-soft); color: var(--skill2); }
+  .ftag.script { background: #fce7f3; color: #be185d; }
+  .ftag.data { background: #fef3e2; color: #b45309; }
+  .note { background: var(--check-soft); border-left: 4px solid var(--check);
+          border-radius: 8px; padding: 12px 16px; font-size: 0.88rem; margin-top: 14px; }
+  .inferred { font-size: 0.72rem; color: var(--muted); font-style: italic; }
+  @media (max-width: 800px) {
+    .pipeline { grid-template-columns: 1fr; }
+    .handoff { flex-direction: row; padding: 10px 0; }
+    .handoff .h-label { writing-mode: horizontal-tb; transform: none; }
+    .task-strip, .struggle-grid, .loop-grid, .files-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Workflow Design Summary: Financial Template Web App Builder</h1>
+  <p class="subtitle">Each run researches one sample financial-template URL from the web and regenerates a local,
+     double-click-to-open web app of business-plan financials, an operating budget, and a one-page decision
+     dashboard — pre-filled with Miralles Music Academy's real numbers.</p>
+</header>
+
+<!-- 1. THE TASK -->
+<h2><span class="num">1</span>The task</h2>
+<div class="task-strip">
+  <div class="card"><div class="label">Unit of work per run</div><div class="value">One sample URL &rarr; one complete regenerated web app (all 3 sections); the most recent URL defines the app</div></div>
+  <div class="card"><div class="label">"Done" looks like</div><div class="value">Static HTML/CSS/JS app in <code>C:\DevProjects\TestProject for Ryan</code> — 3 tabs, pre-filled editable numbers, localStorage persistence, verified with screenshots</div></div>
+  <div class="card"><div class="label">Shape &amp; docs</div><div class="value">Plan &rarr; Implement &rarr; Verify <span class="inferred">(inferred)</span> — no template docs exist up front; the research brief is created fresh each run</div></div>
+</div>
+
+<!-- 2. STRUCTURE -->
+<h2><span class="num">2</span>Structure — 1 skill, flow, and freedom</h2>
+<div class="pipeline">
+
+  <div class="skill-col s1">
+    <div class="skill-title">Skill: building-financial-template-app</div>
+    <div class="skill-sub">Researches a sample financial template online, then builds a consistent local web app for Miralles Music Academy. One skill — the research brief is the internal seam that keeps scraped web content out of the build context.</div>
+
+    <div class="phase">
+      <div class="p-head"><span class="p-name">1 &middot; Research sample URL</span><span class="badge b-mix">High &rarr; Med</span></div>
+      <div class="p-desc">Browsing is free-form (every URL differs), but output is fixed-shape: open the sample URL in the headless browser, extract sections / line items / metrics / layout ideas; re-verify live tuition on <code>mirallesmusic.com</code>; gather CAD music-school benchmarks. Reads <code>school-profile.md</code>, <code>references/benchmarks.md</code>, <code>references/learnings.md</code>. Uses <code>assets/research-brief-template.md</code>.</div>
+      <div class="p-out">research-brief.md</div>
+    </div>
+
+    <div class="checkpoint">
+      <div class="cp-tag">STOP — Checkpoint 1</div>
+      <div>Owner reviews the brief: what will be adopted as-is vs. adapted for a music school, and the proposed default numbers. Approve or redirect before any code is written. <b>Co-review.</b></div>
+    </div>
+
+    <div class="phase">
+      <div class="p-head"><span class="p-name">2 &middot; Generate the web app</span><span class="badge b-med">Medium</span></div>
+      <div class="p-desc">Fill the <code>assets/app-scaffold/</code> (HTML shell, 3 tabs, editable fields, localStorage machinery) using ONLY the brief + school profile — never half-remembered scraped pages. One shared numbers model drives all tabs <span class="inferred">(inferred)</span>. Tab 3 is a decision dashboard: margin, break-even enrollment, what-if levers, teacher capacity (90 students / 6 teachers) <span class="inferred">(inferred)</span>.</div>
+      <div class="p-out">app files in project folder</div>
+    </div>
+
+    <div class="phase">
+      <div class="p-head"><span class="p-name">3 &middot; Verify</span><span class="badge b-low">Low</span></div>
+      <div class="p-desc">Exact checklist: headless browser load &rarr; zero console errors &rarr; click every tab &rarr; no blank number fields &rarr; recompute totals from the numbers model &rarr; cross-check break-even vs. P&amp;L &rarr; screenshot each tab.</div>
+      <div class="p-out">verification note + tab screenshots</div>
+    </div>
+
+    <div class="checkpoint">
+      <div class="cp-tag">STOP — Checkpoint 2</div>
+      <div>Owner reviews screenshots and the verification note. Approve, or send corrections back to Phase 2. <b>Approve.</b> Run then ends by updating <code>references/learnings.md</code>.</div>
+    </div>
+  </div>
+
+  <div class="handoff">
+    <div class="arrow">&#8594;</div>
+    <div class="h-label">research-brief.md (internal seam within one skill)</div>
+  </div>
+
+  <div class="skill-col s2">
+    <div class="skill-title">Build context (same run)</div>
+    <div class="skill-sub">Why the brief exists as an artifact: Phase 2 builds only from the brief + profile, so the volume of scraped web content never pollutes the context that writes the app. If runs ever feel bloated, split into a research skill + build skill using the brief as the formal handoff.</div>
+    <div class="phase">
+      <div class="p-head"><span class="p-name">Consistency guarantee</span><span class="badge b-med">Medium</span></div>
+      <div class="p-desc">Because every run regenerates the full app, the scaffold keeps look &amp; behavior identical run to run — only content changes. Owners' edits live in localStorage, not in the scaffold.</div>
+    </div>
+  </div>
+</div>
+
+<div class="legend">
+  <span><span class="swatch" style="background:#e7f6ec;"></span>High freedom — prose/heuristics</span>
+  <span><span class="swatch" style="background:var(--check-soft);"></span>Medium — template-driven</span>
+  <span><span class="swatch" style="background:#fdeaea;"></span>Low — strict template / exact steps</span>
+  <span><span class="swatch" style="background:var(--check-soft);border:1.5px dashed var(--check);"></span>STOP — checkpoint (human in the loop)</span>
+  <span style="color:var(--artifact);font-weight:600;">OUT: output artifact</span>
+</div>
+
+<div class="note"><b>Determinism:</b> no <code>scripts/</code> — deterministic behavior comes from the fixed app scaffold (<code>assets/</code>) and the exact verify checklist. The heavy lifting (page scraping, rendering) happens through the browser tools, which are already deterministic executors.</div>
+
+<!-- 3. CONTEXT -->
+<h2><span class="num">3</span>Context placement</h2>
+<div class="card" style="padding: 6px 0;">
+  <table>
+    <tr><th>Context item</th><th>Destination</th><th>Why there</th></tr>
+    <tr><td>School facts the website doesn't show: 90 students/week, 6 teachers (incl. owner), personal business-decision purpose, cost concerns, goals</td><td class="dest skillmd"><code>school-profile.md</code> (project folder, read every run)</td><td>Owner-maintained data, not skill logic; lives next to the app it feeds</td></tr>
+    <tr><td>How to approach a sample URL; adopt-vs-adapt rule; brief &rarr; build-only-from-brief rule; app purpose</td><td class="dest skillmd">SKILL.md</td><td>Workflow logic needed every run</td></tr>
+    <tr><td>CAD music-school benchmark sources &amp; typical ranges found in past runs</td><td class="dest refs">references/benchmarks.md</td><td>Only needed while researching; grows run over run</td></tr>
+    <tr><td>What worked in past runs: reliable sources, structures used, app sections actually used for decisions</td><td class="dest refs">references/learnings.md</td><td>Feedback deposit box, read first by every run</td></tr>
+    <tr><td>Research brief shape; HTML/CSS/JS app scaffold with shared numbers model</td><td class="dest assets">assets/</td><td>Shapes the medium-freedom outputs (brief, app)</td></tr>
+    <tr><td>General web-coding conventions</td><td class="dest claude">CLAUDE.md — skipped for now</td><td>Folder is dedicated to this project; revisit if other AI coding happens here</td></tr>
+  </table>
+</div>
+
+<!-- 4. ALIGNMENT -->
+<h2><span class="num">4</span>Alignment — struggle points and checkpoints</h2>
+<div class="struggle-grid">
+  <div class="card struggle">
+    <div class="s-from">Copying the sample template verbatim instead of adapting it to a music school</div>
+    <div class="s-arrow">fixed by</div>
+    <div class="s-to">Mandatory "adopt vs. adapt" table in every research brief</div>
+    <div class="s-detail">Forces explicit judgment for each borrowed section before Checkpoint 1, where the owner sees it.</div>
+  </div>
+  <div class="card struggle">
+    <div class="s-from">Tabs disagreeing with each other — break-even says one thing, P&amp;L another, budget a third</div>
+    <div class="s-arrow">fixed by</div>
+    <div class="s-to">Single numbers model: one JS data object all three tabs render from</div>
+    <div class="s-detail">No hardcoded numbers in tab markup; verify step recomputes from the model.</div>
+  </div>
+  <div class="card struggle">
+    <div class="s-from">Stale pricing — tuition tiers change but the app keeps old rates</div>
+    <div class="s-arrow">fixed by</div>
+    <div class="s-to">Profile stores the school URL; Phase 1 re-verifies live pricing each run</div>
+    <div class="s-detail">Real rates ($160/$230/$300 L1, $199/$285/$365 L2, $50 reg fee, bi-annual &minus;7% / annual &minus;14%) always come from the live site.</div>
+  </div>
+  <div class="card struggle">
+    <div class="s-from">Research phase burying the build phase in scraped web content</div>
+    <div class="s-arrow">fixed by</div>
+    <div class="s-to">research-brief.md as a hard context seam inside one skill</div>
+    <div class="s-detail">Phase 2's rule is literal: build only from the brief + profile, never from memory of the pages.</div>
+  </div>
+</div>
+<div class="note"><b>Checkpoints:</b> two. <b>Checkpoint 1</b> after the brief — plan approval, co-review with the owner (cheapest point to fix a misread of the sample). <b>Checkpoint 2</b> after verification — owner reviews screenshots + verification note and approves or sends corrections back to Phase 2.</div>
+
+<!-- 5. VERIFICATION -->
+<h2><span class="num">5</span>Verification ladder</h2>
+<div class="ladder">
+  <div class="rung r1"><div class="strength">Minimum bar</div>
+    <div class="r-body"><b>App loads clean in the headless browser</b><div>Zero console errors; all 3 tabs render; no blank number fields anywhere.</div></div></div>
+  <div class="rung r2"><div class="strength">Stronger</div>
+    <div class="r-body"><b>Math re-computed against acceptance numbers</b><div>Agent recomputes budget column totals, P&amp;L roll-up, and break-even from the numbers model and compares with what the app displays.</div></div></div>
+  <div class="rung r3"><div class="strength">Strongest</div>
+    <div class="r-body"><b>Human review artifact</b><div>Screenshots of every tab + a short verification note, presented at Checkpoint 2.</div></div></div>
+</div>
+<div class="note"><b>Multiple perspectives (agents):</b> No — single verification pass. Personal-use tool; extra agent passes cost tokens and time for marginal catch rate. If a math error ever slips through, the feedback loop tightens the checklist instead. <span class="inferred">(inferred)</span></div>
+
+<!-- 6. FEEDBACK -->
+<h2><span class="num">6</span>Feedback — every run improves the next</h2>
+<div class="loop-grid">
+  <div class="card loop-card">
+    <div class="l-what">Which sources were reliable, which sample structures produced a good app, which sections the owner actually uses for decisions</div>
+    <div class="l-arrow">written to</div>
+    <div class="l-where"><code>references/learnings.md</code></div>
+    <div class="l-note">Every run reads it first — research quality and app focus improve with use.</div>
+  </div>
+  <div class="card loop-card">
+    <div class="l-what">Benchmark numbers and CAD music-school ranges gathered while researching</div>
+    <div class="l-arrow">written to</div>
+    <div class="l-where"><code>references/benchmarks.md</code></div>
+    <div class="l-note">Future runs start from accumulated context instead of re-searching from zero.</div>
+  </div>
+  <div class="card loop-card">
+    <div class="l-what">Live tuition + policy numbers re-checked from mirallesmusic.com every run</div>
+    <div class="l-arrow">written to</div>
+    <div class="l-where"><code>research-brief.md</code> (per run)</div>
+    <div class="l-note">The app can never drift from the school's real pricing.</div>
+  </div>
+</div>
+
+<!-- 7. FILES -->
+<h2><span class="num">7</span>Files to generate</h2>
+<div class="files-grid">
+  <div class="card">
+    <div class="skill-title" style="color:var(--skill1); margin-bottom:10px;">building-financial-template-app</div>
+    <ul class="file-list">
+      <li><span class="ftag skill">SKILL</span><span><b>SKILL.md</b><br><span class="why">The workflow: read profile + learnings &rarr; research sample URL &rarr; write brief &rarr; STOP checkpoint 1 &rarr; build from scaffold only &rarr; verify checklist &rarr; STOP checkpoint 2 &rarr; update learnings</span></span></li>
+      <li><span class="ftag ref">REF</span><span><b>references/research-brief-guide.md</b><br><span class="why">How to fill the brief for different sample-URL types ( spreadsheets, business-plan pages, pricing pages)</span></span></li>
+      <li><span class="ftag ref">REF</span><span><b>references/benchmarks.md</b><br><span class="why">Stub — CAD music-school benchmark sources &amp; ranges; grows via feedback</span></span></li>
+      <li><span class="ftag ref">REF</span><span><b>references/learnings.md</b><br><span class="why">Stub — feedback deposit box read first by every run</span></span></li>
+      <li><span class="ftag asset">ASSET</span><span><b>assets/research-brief-template.md</b><br><span class="why">Fixed brief shape: sections found &rarr; adopt vs. adapt &rarr; proposed default numbers &rarr; sources</span></span></li>
+      <li><span class="ftag asset">ASSET</span><span><b>assets/app-scaffold/</b><br><span class="why">index.html + styles.css + app.js: 3 tabs, editable fields, localStorage, one shared numbers model, decision dashboard</span></span></li>
+    </ul>
+  </div>
+  <div class="card">
+    <div class="skill-title" style="color:var(--skill2); margin-bottom:10px;">Project data (not skill files)</div>
+    <ul class="file-list">
+      <li><span class="ftag data">DATA</span><span><b>school-profile.md</b><br><span class="why">Owner-maintained: programs, location/CAD/GST, 90 students/week, 6 teachers, business-decision purpose, school URL for live pricing re-check</span></span></li>
+      <li><span class="ftag data">DATA</span><span><b>research-brief.md</b><br><span class="why">Written fresh by each run at Checkpoint 1; the build's only research input</span></span></li>
+      <li><span class="ftag data">DATA</span><span><b>app files (index.html, styles.css, app.js)</b><br><span class="why">The generated product — regenerated every run from scaffold + brief</span></span></li>
+      <li><span class="ftag data">DATA</span><span><b>verification notes + screenshots</b><br><span class="why">Per-run artifacts for Checkpoint 2</span></span></li>
+    </ul>
+    <div class="note" style="margin-top:16px;"><b>CLAUDE.md additions:</b> none proposed — folder is dedicated to this project. Revisit if other AI coding starts here.</div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

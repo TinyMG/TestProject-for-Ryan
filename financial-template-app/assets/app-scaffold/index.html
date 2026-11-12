@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Miralles Music Academy - Financial Model</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div>
+    <h1 id="school-name">Miralles Music Academy</h1>
+    <p class="sub" id="school-sub">Local financial model - edits save automatically in this browser</p>
+  </div>
+  <div class="topbar-actions">
+    <span class="pill" id="generated-pill">generated: -</span>
+    <button id="reset-btn" class="ghost">Reset all edits</button>
+  </div>
+</header>
+
+<nav class="tabs" role="tablist">
+  <button class="tab active" data-tab="plan" role="tab">Business Plan Financials</button>
+  <button class="tab" data-tab="budget" role="tab">Operating Budget</button>
+  <button class="tab" data-tab="dashboard" role="tab">Decision Dashboard</button>
+</nav>
+
+<main>
+  <!-- Tab 1: business-plan financials -->
+  <section id="tab-plan" class="tab-panel active">
+    <div class="cards" id="plan-kpis"></div>
+    <h2>Revenue projections by tuition tier</h2>
+    <p class="hint">Monthly tuition and student counts are editable. GST not included.</p>
+    <div class="tablewrap" id="tier-table"></div>
+    <h2>Monthly P&amp;L</h2>
+    <div class="tablewrap" id="pl-table"></div>
+    <h2>One-time / annual investments</h2>
+    <p class="hint">Amounts are editable assumptions.</p>
+    <div class="tablewrap" id="invest-table"></div>
+  </section>
+
+  <!-- Tab 2: operating budget -->
+  <section id="tab-budget" class="tab-panel">
+    <p class="hint">Months are uniform by design: edit each line's base amount and the year follows.
+      Income rows come from the tier model and update when tiers change.</p>
+    <div class="tablewrap" id="budget-table"></div>
+  </section>
+
+  <!-- Tab 3: decision dashboard -->
+  <section id="tab-dashboard" class="tab-panel">
+    <div class="cards" id="dash-kpis"></div>
+    <h2>What-if levers</h2>
+    <p class="hint">Scenarios are temporary: they show modelled outcomes without saving. Set to 0 and the app returns to your saved numbers.</p>
+    <div class="levers" id="levers"></div>
+    <h2>Capacity</h2>
+    <div class="tablewrap" id="capacity-table"></div>
+    <p class="footnote">All figures CAD, excluding GST (5%), which is collected on tuition and remitted.
+      Break-even enrollment is the student count needed for tier-average revenue to cover monthly expenses.</p>
+  </section>
+</main>
+
+<footer class="foot">
+  <span id="foot-note">Edits persist in this browser via localStorage. "Reset all edits" restores the run's defaults.</span>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

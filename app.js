@@ -1125,9 +1125,6 @@ function renderBoard(view, c, n) {
     html += '<div class="widget add-strip" data-pos="start"><button class="w-add" data-addpos="start" type="button" title="Add a widget at the top">+</button></div>';
   }
   html += list.map((e, i) => widgetHtml(e, i, c, n, view)).join("");
-  if (customizeMode) {
-    html += '<div class="widget add-strip" data-pos="end"><button class="w-add" data-addpos="end" type="button" title="Add a widget at the bottom">+</button></div>';
-  }
   return html;
 }
 let FILTERS = { shape: "all", cat: "all", vis: "all" };

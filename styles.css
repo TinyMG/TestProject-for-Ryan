@@ -256,6 +256,21 @@ h2 { font-size: 1rem; margin: 26px 0 8px; letter-spacing: -0.01em; }
   background: transparent; border: 1.5px dashed var(--line); box-shadow: none;
   display: flex; align-items: center; justify-content: center; min-height: 96px;
 }
+.widget.add-strip {
+  grid-column: 1 / -1;
+  display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 12px;
+  border: 1.5px dashed var(--line); background: transparent; box-shadow: none; min-height: 64px;
+}
+.widget.add-strip .w-add {
+  width: 34px; height: 34px; border-radius: 50%; border: none;
+  background: var(--accent); color: #fff; font-size: 1.05rem; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform .15s ease, filter .15s ease;
+}
+.widget.add-strip .w-add:hover { transform: scale(1.1); filter: brightness(1.1); }
+.add-strip-label { display: inline-flex; align-items: baseline; gap: 10px; font-size: 0.9rem; }
+.add-strip-label strong { font-weight: 700; color: var(--ink); }
+.add-strip-hint { color: var(--muted); font-weight: 400; }
 .widget.empty.customizing { border-color: var(--accent); }
 .w-add {
   width: 46px; height: 46px; border-radius: 50%; border: none;

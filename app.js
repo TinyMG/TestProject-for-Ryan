@@ -1122,7 +1122,9 @@ function renderBoard(view, c, n) {
   const list = state.widgets[view] || [];
   let html = "";
   if (customizeMode) {
-    html += '<div class="widget add-strip" data-pos="start"><button class="w-add" data-addpos="start" type="button" title="Add a widget at the top">+</button></div>';
+    html += '<div class="widget add-strip"><button class="w-add" data-addpos="start" type="button" title="Add a widget at the top">+</button>' +
+      '<span class="add-strip-label"><strong>Add Widget</strong>' +
+      '<span class="add-strip-hint">— Click to browse and customize metrics on your dashboard</span></span></div>';
   }
   html += list.map((e, i) => widgetHtml(e, i, c, n, view)).join("");
   return html;

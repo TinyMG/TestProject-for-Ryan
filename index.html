@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Miralles Music Academy - Financial Model</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <h1 id="school-name">Miralles Music Academy</h1>
+      <p class="sub" id="school-sub">Local financial model - edits save automatically in this browser</p>
+    </div>
+    <nav class="side-nav" role="tablist">
+      <button class="side-link active" data-tab="plan" role="tab">
+        <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1.5" y="3" width="13" height="10.5" rx="2"/><path d="M1.5 6.2h13M5.2 1.5v3M10.8 1.5v3"/></svg>
+        Business Plan Financials
+      </button>
+      <button class="side-link" data-tab="budget" role="tab">
+        <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 1.8h8v12.4l-2.2-1.6-1.8 1.6-1.8-1.6L4 14.2z"/><path d="M6.2 5.2h3.6M6.2 7.8h3.6"/></svg>
+        Operating Budget
+      </button>
+      <button class="side-link" data-tab="dashboard" role="tab">
+        <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 13.5v-5M6.5 13.5V6M11 13.5V8.5"/><path d="M13.5 13.5h-11"/></svg>
+        Decision Dashboard
+      </button>
+    </nav>
+    <div class="side-foot">
+      <button id="theme-btn" class="ghost" type="button" title="Switch between light and dark">☾ Theme</button>
+      <button id="reset-btn" class="ghost">Reset all edits</button>
+    </div>
+  </aside>
+  <div class="main-col">
+    <header class="topbar">
+      <div class="topbar-actions">
+        <div class="mini-seg" id="bp-view" role="tablist" aria-label="Business plan view">
+          <button type="button" data-v="income">Income</button>
+          <button type="button" data-v="expenses">Expenses</button>
+        </div>
+        <span class="pill" id="generated-pill">generated: -</span>
+        <button id="customize-btn" class="ghost" type="button" title="Rearrange, resize, add or remove widgets">✎ Customize</button>
+      </div>
+    </header>
+
+    <main>
+      <!-- Tab 1: business-plan financials -->
+      <section id="tab-plan" class="tab-panel active">
+        <div id="bp-income" class="bp-view active">
+          <div id="board-income" class="widget-board"></div>
+        </div>
+        <div id="bp-expenses" class="bp-view">
+          <div id="board-expenses" class="widget-board"></div>
+        </div>
+      </section>
+  <section id="tab-budget" class="tab-panel">
+    <div class="chartwrap"><div class="chart-cap">The year at a glance
+      <label class="inline-toggle"><input type="checkbox" id="py-toggle"> compare with previous year (13-24 months ago)</label>
+    </div></div>
+    <div id="prior-controls"></div>
+    <p class="hint">Cumulative net builds in a straight line because months are uniform by design - it bends the moment
+      you try a scenario on the Decision Dashboard. The previous-year line is a modeled estimate from your comparison
+      inputs, not accounting actuals. Hover any point for its value.</p>
+    <div class="chartwrap"><div id="chart-trend"></div></div>
+    <p class="hint">Months are uniform by design: edit each line's base amount and the year follows.
+      Income rows come from the tier model and update when tiers change.</p>
+    <div class="tablewrap" id="budget-table"></div>
+  </section>
+
+  <!-- Tab 3: decision dashboard -->
+  <section id="tab-dashboard" class="tab-panel">
+    <div class="chartwrap"><div class="chart-cap">How safe is the model?</div>
+      <p class="hint">Net income as enrollment swings -50% to +50%. The open ring is where you are now (it moves with the
+        levers); the dashed red line is break-even. Hover points for details.</p>
+      <div id="chart-sensitivity"></div>
+    </div>
+    <h2>Am I making money?</h2>
+    <div class="cards" id="verdicts"></div>
+    <h2>Where did the money go?</h2>
+    <div class="cards" id="dash-kpis"></div>
+    <h2>Is it getting better or worse?</h2>
+    <p class="hint">Scenarios are temporary: they show modelled outcomes without saving. Set to 0 and the app returns to your saved numbers.</p>
+    <div id="scenario-banner"></div>
+    <div class="levers" id="levers"></div>
+    <h2>Targets</h2>
+    <div id="targets-table"></div>
+    <h2>Capacity</h2>
+    <div class="tablewrap" id="capacity-table"></div>
+    <p class="footnote">All figures CAD, excluding GST (5%), which is collected on tuition and remitted.
+      Break-even enrollment is the student count needed for tier-average revenue to cover monthly expenses.
+      Dashboard structure adapted from hellocashflow.com (health-check verdicts, scenario levers, targets).</p>
+  </section>
+</main>
+
+    <footer class="foot">
+      <span id="foot-note">Edits persist in this browser via localStorage. "Reset all edits" restores the run's defaults.</span>
+    </footer>
+  </div>
+</div>
+<div id="add-modal" class="modal-backdrop"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -33,14 +33,23 @@ Read all three before anything else:
 
 ## Step 1: Research the sample URL
 
-1. Open the sample URL with the headless browser tools. Extract its anatomy:
+Use the Playwright MCP server (`tools.playwright.*` in Code Mode) for ALL
+online work in this skill - the sample URL, live pricing, AND every benchmark
+or reference site. Do not use text fetchers or search snippets as sources;
+visit pages in the browser and read what renders.
+
+1. Open the sample URL with `browser_navigate`, then read the page with
+   `browser_snapshot`. If key content (tables, calculators) renders only via
+   JS, extract it with `browser_evaluate`. Capture a `browser_take_screenshot`
+   for visual reference when layout matters. Extract its anatomy:
    sections, line items, metrics, layout patterns, what it repeats per period.
 2. Re-verify live pricing at https://www.mirallesmusic.com/pricing (tuition
    tiers, registration fee, bi-annual/annual discounts, policies). Never trust
    remembered numbers - always pull them fresh this run.
 3. Gather 2-4 CAD music-school benchmark figures (typical tuition ranges,
-   teacher-pay ratios, expense ratios) to sanity-check assumptions. Add any
-   good source to `references/benchmarks.md`.
+   teacher-pay ratios, expense ratios) to sanity-check assumptions. Visit each
+   candidate source in the browser and extract the figures from the rendered
+   page before recording it. Add any good source to `references/benchmarks.md`.
 4. Fill `assets/research-brief-template.md` completely and save it as
    `research-brief.md` in the project folder. Follow
    `references/research-brief-guide.md` for how to judge adopt vs. adapt.
@@ -69,15 +78,17 @@ or corrections. Do not write any code before approval.
 
 ## Step 3: Verify
 
-Run in this exact order using the headless browser tools:
+Run in this exact order using the Playwright MCP tools:
 
-1. Open the generated `index.html` (file:// URL).
-2. Assert zero console errors (`browser_console_messages`).
-3. Click all three tabs; each renders populated content.
+1. `browser_navigate` to the generated `index.html` (file:// URL), then
+   `browser_snapshot`.
+2. Assert zero console errors (`browser_console_messages`, level "error").
+3. `browser_click` all three tabs; each renders populated content
+   (re-snapshot after each click).
 4. Assert no blank number fields.
 5. Recompute independently from the model: per-tier revenue, expense total,
    net, margin, break-even. Compare with displayed values; they must match.
-6. Screenshot each tab.
+6. `browser_take_screenshot` each tab.
 7. Write `verification-note.md` in the project folder: each check, its
    result, and any discrepancy found and fixed.
 

@@ -894,18 +894,18 @@ function renderOpsEditor(c) {
 /* ---------- widget system (Business Plan page) ---------- */
 
 const KPI_DEFS = {
-  income:      { label: "Monthly tuition revenue", icon: "money", money: true, goodUp: true, cat: "income", vis: "line" },
-  expenses:    { label: "Monthly expenses", icon: "receipt", money: true, goodUp: false, cat: "expenses", vis: "line" },
-  net:         { label: "Monthly net", icon: "wallet", money: true, goodUp: true, cat: "profit", vis: "line", sub: (c) => fmtPct(c.margin) + " margin" },
-  students:    { label: "Active students", icon: "users", money: false, goodUp: true, cat: "ops", vis: "line", sub: () => "roster total" },
-  breakeven:   { label: "Break-even enrollment", icon: "target", money: false, goodUp: false, cat: "profit", vis: "other", sub: (c) => "now " + Math.round(c.studentCount) },
-  perTeacher:  { label: "Students per teacher", icon: "users", money: false, goodUp: true, cat: "ops", vis: "other", sub: (c) => "capacity " + c.capacityPerTeacher },
-  lessons:     { label: "Lessons per student / yr", icon: "note", money: false, goodUp: true, cat: "other", vis: "other", sub: () => "flat monthly fee model" },
-  newStudents: { label: "New students gained", icon: "userplus", money: false, goodUp: true, cat: "ops", vis: "line", ops: true },
-  lostStudents:{ label: "Lost / ended students", icon: "userminus", money: false, goodUp: false, cat: "ops", vis: "line", ops: true },
-  overdue:     { label: "Overdue invoices ($)", icon: "warn", money: true, goodUp: false, cat: "income", vis: "other", ops: true, alert: true,
+  income:      { label: "Monthly tuition revenue", icon: "money", money: true, goodUp: true, tone: "#f2ca50", cat: "income", vis: "line" },
+  expenses:    { label: "Monthly expenses", icon: "receipt", money: true, goodUp: false, tone: "#ffb4ab", cat: "expenses", vis: "line" },
+  net:         { label: "Monthly net", icon: "wallet", money: true, goodUp: true, tone: "#48e5d0", cat: "profit", vis: "line", sub: (c) => fmtPct(c.margin) + " margin" },
+  students:    { label: "Active students", icon: "users", money: false, goodUp: true, tone: "#bec6e0", cat: "ops", vis: "line", sub: () => "roster total" },
+  breakeven:   { label: "Break-even enrollment", icon: "target", money: false, goodUp: false, tone: "#e9c349", cat: "profit", vis: "other", sub: (c) => "now " + Math.round(c.studentCount) },
+  perTeacher:  { label: "Students per teacher", icon: "users", money: false, goodUp: true, tone: "#bec6e0", cat: "ops", vis: "other", sub: (c) => "capacity " + c.capacityPerTeacher },
+  lessons:     { label: "Lessons per student / yr", icon: "note", money: false, goodUp: true, tone: "#d0c5af", cat: "other", vis: "other", sub: () => "flat monthly fee model" },
+  newStudents: { label: "New students gained", icon: "userplus", money: false, goodUp: true, tone: "#48e5d0", cat: "ops", vis: "line", ops: true },
+  lostStudents:{ label: "Lost / ended students", icon: "userminus", money: false, goodUp: false, tone: "#ffb4ab", cat: "ops", vis: "line", ops: true },
+  overdue:     { label: "Overdue invoices ($)", icon: "warn", money: true, goodUp: false, cat: "income", vis: "other", ops: true, alert: true, tone: "#ef4444",
                  sub: () => state.ops.overdue.count + " invoices" },
-  holds:       { label: "On hold (next month)", icon: "pause", money: false, goodUp: false, cat: "ops", vis: "other", ops: true },
+  holds:       { label: "On hold (next month)", icon: "pause", money: false, goodUp: false, tone: "#bec6e0", cat: "ops", vis: "other", ops: true },
 };
 function kpiValue(key, c) {
   switch (key) {
@@ -1001,6 +1001,52 @@ function kpiExtra(key, c) {
 function kpiDetail(key, c, n) {
   const s = kpiSeries(key, c, n);
   return bigLine(s.points, s.labels, KPI_DEFS[key].money);
+}
+function kpiCallout(key, c) {
+  const o = state.ops;
+  switch (key) {
+    case "income": return { ctx: MONTHS[monthNow()] + " tuition billed", callout: { label: "Received MTD", value: fmt(mtdEstimate(c)) } };
+    case "expenses": {
+      const payroll = state.expenses.find((x) => x.name === "Teacher payroll");
+      const rent = state.expenses.find((x) => x.name === "Rent");
+      const big = (payroll ? eff.expense(payroll) : 0) + (rent ? eff.expense(rent) : 0);
+      return { ctx: MONTHS[monthNow()] + " operational cost", callout: { label: "Payroll & rent", value: fmt(big) } };
+    }
+    case "net": return { ctx: MONTHS[monthNow()] + " net after costs", callout: { label: "Net per student", value: "$" + (c.studentCount > 0 ? (c.net / c.studentCount).toFixed(2) : "0.00") } };
+    case "students": {
+      const top = c.cats.slice().sort((a, b) => b.students - a.students)[0];
+      return { ctx: "Current enrollment", callout: { label: top.name, value: Math.round(top.students) + " students" } };
+    }
+    case "breakeven": return { ctx: "Minimum viable roster", callout: { label: "Headroom", value: Math.max(0, Math.round(c.studentCount - c.breakEvenStudents)) + " students" } };
+    case "perTeacher": return { ctx: "Enrollment utilization", callout: { label: "Capacity", value: c.capacityPerTeacher + " students/teacher" } };
+    case "lessons": return { ctx: "How often students attend", callout: { label: "Billing", value: "Flat monthly fee" } };
+    case "newStudents": return { ctx: "Monthly intake", callout: { label: "Last month", value: String(Number(o.newStudents.prev)) } };
+    case "lostStudents": return { ctx: "Student departures", callout: { label: "Last month", value: String(Number(o.lostStudents.prev)) } };
+    case "overdue": return { ctx: "Outstanding invoices", callout: { label: "Due next month", value: fmt(Number(o.overdue.nextAmount)) } };
+    case "holds": return { ctx: "Temporarily paused", callout: { label: "This month", value: String(Number(o.onHoldThisMonth.value)) } };
+  }
+  return { ctx: "", callout: null };
+}
+// Rich (Medium/Large) KPI card: mini range toggle, school line, context,
+// big value, delta, colored callout box and a detail-sized chart.
+function kpiRichInner(key, c, n) {
+  const def = KPI_DEFS[key];
+  const val = kpiValue(key, c);
+  const valueHtml = (def.money ? fmt(val) : (key === "perTeacher" ? val.toFixed(1) : Math.round(val))) +
+    (def.sub ? kSub(def.sub(c)) : "");
+  const co = kpiCallout(key, c);
+  const s = kpiSeries(key, c, n);
+  const d = metricDelta(key, c, n);
+  const seg = ["1M", "3M", "6M", "1Y"].map((r) =>
+    '<button type="button" data-range="' + r + '"' + (incomeRange === r ? ' class="active"' : "") + ">" + r + "</button>").join("");
+  return '<div class="k-rich"><div class="k-top"><div class="k-label">' + esc(def.label) + '</div>' +
+    '<span class="mini-seg k-seg" role="tablist" aria-label="Comparison window for all metrics">' + seg + "</span></div>" +
+    '<div class="k-school">Miralles Music Academy · CAD</div>' +
+    '<div class="k-ctx">' + esc(co.ctx) + "</div>" +
+    '<div class="k-value">' + valueHtml + "</div>" +
+    '<span class="k-delta ' + d.cls + '">' + d.text + "</span>" +
+    (co.callout ? '<div class="k-callout" style="background:' + def.tone + '1f"><span class="k-callout-bar" style="background:' + def.tone + '"></span><span class="k-callout-text"><span class="k-callout-label">' + esc(co.callout.label) + '</span><span class="k-callout-value">' + esc(co.callout.value) + "</span></span></div>" : "") +
+    '<div class="k-chart">' + bigLine(s.points, s.labels, def.money) + "</div></div>";
 }
 // KPI card inner content (no card shell - the widget provides it)
 function kpiCardInner(key, c, n, compact) {
@@ -1098,9 +1144,16 @@ function widgetBody(entry, c, n, preview) {
         renderOpsEditor(c);
     case "investments":
       return investmentsHtml(c);
-    case "kpi":
-      if (preview) return kpiCardInner(entry.k, c, n);
-      return expandedKey === entry.k ? kpiExpandedInner(entry.k, c, n) : kpiCardInner(entry.k, c, n);
+    case "kpi": {
+      if (preview) {
+        if (entry.size === "XS") return kpiCardInner(entry.k, c, n, true);
+        if (entry.size === "M" || entry.size === "L") return kpiRichInner(entry.k, c, n);
+        return kpiCardInner(entry.k, c, n);
+      }
+      if (expandedKey === entry.k) return kpiExpandedInner(entry.k, c, n);
+      if (entry.size === "M" || entry.size === "L") return kpiRichInner(entry.k, c, n);
+      return kpiCardInner(entry.k, c, n, entry.size === "XS");
+    }
   }
   return "";
 }
@@ -1113,7 +1166,7 @@ function widgetHtml(entry, idx, c, n, view) {
     '<button class="w-act w-x" data-wremove="' + idx + '" type="button" title="Remove widget">✕</button></div>' : "";
   const vtName = customizeMode ? "" : ' style="view-transition-name: wt-' + view + "-" + idx + '"';
   const kpiExpand = entry.w === "kpi" && !customizeMode ? ' data-expand="' + entry.k + '"' : "";
-  const alertCls = entry.w === "kpi" && entry.k === "overdue" && kpiValue("overdue", c) > 0 ? " alert" : "";
+  const alertCls = entry.w === "kpi" && entry.k === "overdue" && kpiValue("overdue", c) > 0 ? " kpi-alert" : "";
   return '<div class="widget size-' + sizeCls + (customizeMode ? " customizing" : "") + alertCls +
     '" data-idx="' + idx + '"' + kpiExpand + (customizeMode ? ' draggable="true"' : "") + vtName + ">" +
     chrome + '<div class="w-body">' + body + "</div></div>";
@@ -1142,10 +1195,10 @@ function widgetPickerItems() {
   });
   Object.keys(KPI_DEFS).forEach((k) => {
     const def = KPI_DEFS[k];
-    if (FILTERS.shape !== "all" && "S" !== FILTERS.shape) return;
+    const size = FILTERS.shape !== "all" && WIDGET_DEFS.kpi.sizes.indexOf(FILTERS.shape) !== -1 ? FILTERS.shape : "S";
     if (FILTERS.cat !== "all" && def.cat !== FILTERS.cat) return;
     if (FILTERS.vis !== "all" && def.vis !== FILTERS.vis) return;
-    items.push({ w: "kpi", k: k, label: def.label, size: "S", cat: def.cat, vis: def.vis, kpi: k });
+    items.push({ w: "kpi", k: k, label: def.label, size: size, cat: def.cat, vis: def.vis, kpi: k });
   });
   return items;
 }
@@ -1192,8 +1245,8 @@ function renderAddModal(c, n) {
     '<div class="add-grid">' +
     (items.length ? items.map((it) => {
       const tags = '<div class="pv-tags">' + esc(catLabel(it.cat) + " \u00B7 " + visLabel(it.vis)) + "</div>";
-      const entry = { w: it.w, k: it.k };
-      return '<div class="widget preview size-' + it.size + '" data-addw="' + it.w + '"' +
+      const entry = { w: it.w, k: it.k, size: it.size };
+      return '<div class="widget preview size-' + it.size + '" data-addw="' + it.w + '" data-fixedsize="' + it.size + '"' +
         (it.k ? ' data-addk="' + it.k + '"' : "") + '>' +
         widgetBody(entry, c, n, true).replace(/\sid=\"[^\"]*\"/g, "") +
         '<div class="preview-add">+ add to board</div></div>';

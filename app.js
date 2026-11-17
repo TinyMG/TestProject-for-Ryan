@@ -1579,6 +1579,15 @@ function wireInputs() {
   document.addEventListener("keydown", (ev) => {
     if (ev.key === "Escape" && addMenuOpen) { closeAddModal(); renderAll(); }
   });
+  document.getElementById("theme-btn").addEventListener("click", () => {
+    applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
+    renderAll();
+  });
+  document.getElementById("py-toggle").addEventListener("change", (ev) => {
+    state.priorYear.enabled = ev.target.checked;
+    save();
+    renderAll();
+  });
   document.getElementById("reset-btn").addEventListener("click", () => {
     if (!confirm("Discard all saved edits and restore this run's defaults?")) return;
     localStorage.removeItem(DEFAULTS.meta.storageKey);

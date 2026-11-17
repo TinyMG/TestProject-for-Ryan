@@ -1,30 +1,41 @@
+/* Stitch design system — "Cadence Academy" theme (dark, gold accents) */
 :root {
-  --bg: #f4f6fa; --card: #ffffff; --ink: #141a2e; --muted: #61708b;
-  --line: #e5e9f2; --accent: #6d28d9; --accent-soft: #f1ebfe;
-  --good: #15803d; --bad: #dc2626; --warn-bg: #fef3e2;
-  --shadow: 0 1px 2px rgba(16, 24, 40, .04), 0 2px 6px rgba(16, 24, 40, .05);
-  --seg-bg: #edf0f6;
-  --c-net: #7c3aed; --c-expense: #dc2626; --c-income: #15803d; --c-blue: #2563eb;
-  --c-grid: #dfe4ee; --c-text: #61708b; --c-ink: #141a2e;
+  --bg: #f8f6f0; --card: #fffdf6; --ink: #131410; --muted: #6b6353;
+  --line: #e2ddd0; --accent: #a07d1a; --accent-soft: #f5edd6;
+  --good: #0f766e; --bad: #93000a; --warn-bg: #fdf3d8;
+  --shadow: 0 1px 2px rgba(19, 20, 16, .05), 0 2px 6px rgba(19, 20, 16, .06);
+  --seg-bg: #f0ede3;
+  --c-net: #0f766e; --c-expense: #93000a; --c-income: #0f766e; --c-blue: #a07d1a;
+  --c-grid: #e2ddd0; --c-text: #6b6353; --c-ink: #131410;
 }
 [data-theme="dark"] {
-  --bg: #0e1320; --card: #161d2e; --ink: #e8ecf6; --muted: #93a0ba;
-  --line: #263048; --accent: #a78bfa; --accent-soft: #2a2350;
-  --good: #34d399; --bad: #f87171; --warn-bg: #3a2c14;
-  --shadow: 0 1px 2px rgba(0, 0, 0, .35), 0 2px 8px rgba(0, 0, 0, .35);
-  --seg-bg: #1d2537;
-  --c-net: #a78bfa; --c-expense: #f87171; --c-income: #34d399; --c-blue: #60a5fa;
-  --c-grid: #263048; --c-text: #93a0ba; --c-ink: #e8ecf6;
+  --bg: #131410; --card: #1f201c; --ink: #e4e2dd; --muted: #d0c5af;
+  --line: #353531; --accent: #f2ca50; --accent-soft: rgba(242, 202, 80, 0.14);
+  --good: #48e5d0; --bad: #ffb4ab; --warn-bg: #3a2c14;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .45), 0 2px 8px rgba(0, 0, 0, .45);
+  --seg-bg: #1b1c18;
+  --c-net: #48e5d0; --c-expense: #ffb4ab; --c-income: #f2ca50; --c-blue: #f2ca50;
+  --c-grid: #353531; --c-text: #d0c5af; --c-ink: #e4e2dd;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI Variable Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   background:
-    radial-gradient(1200px 400px at 85% -10%, rgba(109, 40, 217, .06), transparent 60%),
+    radial-gradient(1200px 400px at 85% -10%, rgba(242, 202, 80, .07), transparent 60%),
     var(--bg);
   color: var(--ink); line-height: 1.5; padding: 0 0 48px;
   font-variant-numeric: tabular-nums;
   transition: background-color .25s ease, color .25s ease;
+}
+@font-face {
+  font-family: "Inter";
+  src: url("fonts/Inter-100900-latin.woff2") format("woff2");
+  font-weight: 100 900; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Playfair Display";
+  src: url("fonts/PlayfairDisplay-400900-latin.woff2") format("woff2");
+  font-weight: 400 900; font-style: normal; font-display: swap;
 }
 .app { display: flex; min-height: 100vh; }
 .sidebar {
@@ -54,6 +65,9 @@ body {
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--line); padding: 12px 28px;
   position: sticky; top: 0; z-index: 5;
+}
+.topbar h1, .sidebar .brand h1, .io-big, .k-value {
+  font-family: "Playfair Display", Georgia, serif;
 }
 .topbar h1 { font-size: 1.2rem; letter-spacing: -0.02em; font-weight: 750; }
 .topbar .sub { color: var(--muted); font-size: 0.82rem; }
